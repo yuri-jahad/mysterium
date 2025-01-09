@@ -19,7 +19,7 @@ export const createOAuthHandler =
     );
     authUrl.searchParams.append("response_type", "code");
     authUrl.searchParams.append("scope", config.scopes.join(" "));
-    console.log(authUrl.toString())
+    console.log(authUrl.toString());
     return Response.redirect(authUrl.toString());
   };
 
@@ -65,7 +65,7 @@ export const createOAuthCallbackHandler =
       });
 
       const userData = await userResponse.json();
-      console.log(userData)
+      console.log(userData);
       const normalizedUserData = config.getUserData(userData);
 
       const token = await new SignJWT({

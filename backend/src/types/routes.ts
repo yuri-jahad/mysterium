@@ -1,2 +1,7 @@
 export type HttpMethod = "post" | "get";
-export type RouteHandler = (req: Request) => Response | Promise<Response>;
+export type RouteHandler = (req: Request) => any;
+export type RoutesCollection = Array<{
+  method: HttpMethod;
+  handler: RouteHandler;
+  key: string;
+}>;

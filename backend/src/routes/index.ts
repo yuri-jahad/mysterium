@@ -1,45 +1,10 @@
-import type { HttpMethod, RouteHandler } from "@/types/routes";
-import {
-  createOAuthHandler,
-  createOAuthCallbackHandler,
-} from "@/auth/handlers/oauth";
+import type { RoutesCollection } from "@/types/routes";
+import protectedRoutes from "@/routes/permissions/protected";
+import publicRoutes from "@/routes/permissions/public";
 
-const routes: Array<{
-  method: HttpMethod;
-  handler: RouteHandler;
-  key: string;
-}> = [
-  {
-    method: "get",
-    key: "auth/discord",
-    handler: createOAuthHandler("discord"),
-  },
-  {
-    method: "get",
-    key: "auth/discord/callback",
-    handler: createOAuthCallbackHandler("discord"),
-  },
-  {
-    method: "get",
-    key: "auth/google",
-    handler: createOAuthHandler("google"),
-  },
-  {
-    method: "get",
-    key: "auth/google/callback",
-    handler: createOAuthCallbackHandler("google"),
-  },
-  {
-    method: "get",
-    key: "auth/github",
-    handler: createOAuthHandler("github"),
-  },
-  {
-    method: "get",
-    key: "auth/github/callback",
-    handler: createOAuthCallbackHandler("github"),
-  },
-
+const routes: RoutesCollection = [
+  ...publicRoutes, 
+  ...protectedRoutes, 
 ];
 
 export default routes;

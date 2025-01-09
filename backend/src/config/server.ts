@@ -1,29 +1,47 @@
 import RoutesManager from "@/routes/lib/manager";
+import loadData from "@/config/load-data";
 import routes from "@/routes";
 
-const router = new RoutesManager().register(routes);
 
-Bun.serve({
-  fetch(req: Request, server) {
-    const success = server.upgrade(req);
-    if (success) return undefined;
 
+
+/** 
+ * HTTP request handler for the server
+ */
+const handleHttpRequest =
+  (router: RoutesManager) =>
+  async (req: Request): Promise<Response> => {
     const url = new URL(req.url);
     const pathname = url.pathname.slice(1);
     const method = req.method.toLowerCase() as "get" | "post";
 
-    // Utiliser l'instance existante
     const handler = router.get(method, pathname);
-    if (handler) {
-      try {
-        return handler(req);
-      } catch (error) {
-        console.error(`Error handling route ${pathname}:`, error);
-        return new Response("Internal Server Error", { status: 500 });
-      }
+    if (!handler) {
+      return new Response("Route not found", { status: 404 });
     }
 
-    return new Response("Route not found", { status: 404 });
+    try {
+      const result = await handler(req);
+      // Si le handler retourne null, on continue
+      return result || new Response("Not found", { status: 404 });
+    } catch (error) {
+      console.error(`Error handling route ${pathname}:`, error);
+      return new Response("Internal Server Error", { status: 500 });
+    }
+  };
+
+// Initialize router
+const router = new RoutesManager().register(routes);
+
+// Start server
+Bun.serve({
+  fetch(req: Request, server): Response | Promise<Response> {
+    const success = server.upgrade(req);
+    if (success) {
+      return new Response(null, { status: 101 });
+    }
+
+    return handleHttpRequest(router)(req);
   },
   websocket: {
     async message(ws, message) {
