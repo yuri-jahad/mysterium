@@ -36,8 +36,6 @@ export function protect(handler: RouteHandler): RouteHandler {
 
     if (authResult === true) {
       return handler(req);
-    } else {
-      console.log("et NON BOUFFON AHAHA");
     }
 
     return authResult as Response;

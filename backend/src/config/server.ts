@@ -44,9 +44,15 @@ Bun.serve({
     return handleHttpRequest(router)(req);
   },
   websocket: {
+    open (ws) {
+      console.log("client connecté !");
+    },
     async message(ws, message) {
       console.log(`Message reçu: ${message}`);
       ws.send(`Message envoyé au client`);
     },
+    close(ws) {
+      console.log("le client s'est déconnecté !")
+    }
   },
 });

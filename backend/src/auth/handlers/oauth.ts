@@ -65,7 +65,6 @@ export const createOAuthCallbackHandler =
       });
 
       const userData = await userResponse.json();
-      console.log(userData);
       const normalizedUserData = config.getUserData(userData);
 
       const token = await new SignJWT({
