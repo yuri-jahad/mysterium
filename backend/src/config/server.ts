@@ -2,10 +2,7 @@ import RoutesManager from "@/routes/lib/manager";
 import loadData from "@/config/load-data";
 import routes from "@/routes";
 
-
-
-
-/** 
+/**
  * HTTP request handler for the server
  */
 const handleHttpRequest =
@@ -44,7 +41,7 @@ Bun.serve({
     return handleHttpRequest(router)(req);
   },
   websocket: {
-    open (ws) {
+    open(ws) {
       console.log("client connecté !");
     },
     async message(ws, message) {
@@ -52,7 +49,7 @@ Bun.serve({
       ws.send(`Message envoyé au client`);
     },
     close(ws) {
-      console.log("le client s'est déconnecté !")
-    }
+      console.log("le client s'est déconnecté !");
+    },
   },
 });

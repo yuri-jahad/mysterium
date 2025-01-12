@@ -1,11 +1,11 @@
-// import type { RoomCreate } from "@/types/room";
+import type { RoomCreate } from "@/types/room";
 
-// export default class Room {
-//   private _roomCreated;
-//   constructor(roomCreate: RoomCreate) {
-//     this._roomCreated = { ...roomCreate };
-//     this.players = new Map()
-//   }
+export default class Room {
+  #roomCreated;
+  constructor(roomCreate: RoomCreate) {
+    this.#roomCreated = { ...roomCreate };
+    this.players = new Map()
+  }
 
 
-// }
+}
