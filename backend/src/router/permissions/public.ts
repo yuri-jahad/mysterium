@@ -1,10 +1,8 @@
-import type { HttpMethod, RouteHandler, RoutesCollection } from "@/types/routes";
-import {
-  createOAuthHandler,
-  createOAuthCallbackHandler,
-} from "@/auth/handlers/oauth";
+import type { RoutesCollection } from "@/shared/types/routes";
+import createOAuthHandler from "@/auth/oauth/handlers/oauth-redirect";
+import createOAuthCallbackHandler from "@/auth/oauth/handlers/oauth-callback";
 
-const publicRoutes: RoutesCollection  = [
+const publicRoutes: RoutesCollection = [
   {
     method: "get",
     key: "auth/discord",
@@ -35,7 +33,6 @@ const publicRoutes: RoutesCollection  = [
     key: "auth/github/callback",
     handler: createOAuthCallbackHandler("github"),
   },
-  
 ];
 
 export default publicRoutes;

@@ -1,5 +1,5 @@
-import type { HttpMethod, RouteHandler } from "@/types/routes";
-import RouteCollection from "@/routes/lib/collection";
+import type { HttpMethod, RouteHandler } from "@/shared/types/routes";
+import RouteCollection from "@/router/collection";
 
 // router.ts
 export default class RoutesManager {

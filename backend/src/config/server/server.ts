@@ -1,6 +1,6 @@
-import RoutesManager from "@/routes/lib/manager";
-import loadData from "@/config/load-data";
-import routes from "@/routes";
+import RoutesManager from "@/router/manager";
+import loadData from "@/config/data/load-data";
+import routes from "@/router";
 
 /**
  * HTTP request handler for the server

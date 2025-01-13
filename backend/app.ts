@@ -1,3 +1,4 @@
-import "@/config/server"
-import "@/utils/generate-room-key"
+import "@/config/server/server";
+import generateRoomKey from "@/shared/utils/generate-room-key";
+
 

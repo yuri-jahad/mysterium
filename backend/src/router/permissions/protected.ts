@@ -1,11 +1,11 @@
-import { protect } from "@/auth/middlewares/auth";
+import { protect } from "@/router/guards/auth-guard";
 
 import type {
   HttpMethod,
   RouteHandler,
   RoutesCollection,
-} from "@/types/routes";
-import test from "@/routes/handlers/test";
+} from "@/shared/types/routes";
+import test from "@/router/handlers/test";
 
 const protectedRoutes: RoutesCollection = [
   {

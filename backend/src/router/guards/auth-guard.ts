@@ -1,10 +1,10 @@
-import type { RouteHandler } from "@/types/routes";
+import type { RouteHandler } from "@/shared/types/routes";
 import { jwtVerify } from "jose";
 
 /**
  * Authentication middleware that verifies JWT token from cookies
  */
-async function authMiddleware(req: Request) {
+async function authGard(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie");
     if (!cookieHeader) {
@@ -32,7 +32,7 @@ async function authMiddleware(req: Request) {
  */
 export function protect(handler: RouteHandler): RouteHandler {
   return async (req: Request) => {
-    const authResult = await authMiddleware(req);
+    const authResult = await authGard(req);
 
     if (authResult === true) {
       return handler(req);

@@ -1,6 +1,6 @@
-import type { OAuthConfig } from "@/types/oauth";
+import type { OAuthConfig } from "@/shared/types/oauth-normalized";
 
-export const oauthProviders: Record<string, OAuthConfig> = {
+export const oauthProviders: OAuthConfig = {
   discord: {
     name: "Discord",
     authUrl: "https://discord.com/api/oauth2/authorize",
