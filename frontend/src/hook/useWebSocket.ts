@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import type { SocketEvents } from "types/websocket";
 
 export default function useWebSocket() {
   const [isConnected, setIsConnected] = useState(false);
@@ -39,7 +40,7 @@ export default function useWebSocket() {
   }, []);
 
   // Fonction pour envoyer des messages
-  const sendMessage = (message: string) => {
+  const sendMessage = (message: SocketEvents): void => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(message));
     }

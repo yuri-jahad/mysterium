@@ -4,7 +4,7 @@ import { jwtVerify } from "jose";
 /**
  * Authentication middleware that verifies JWT token from cookies
  */
-async function authGard(req: Request) {
+async function oauthGard(req: Request) {
   try {
     const cookieHeader = req.headers.get("cookie");
     if (!cookieHeader) {
@@ -32,9 +32,9 @@ async function authGard(req: Request) {
  */
 export function protect(handler: RouteHandler): RouteHandler {
   return async (req: Request) => {
-    const authResult = await authGard(req);
+    const authResult = await oauthGard(req);
 
-    if (authResult === true) {
+    if (authResult) {
       return handler(req);
     }
 

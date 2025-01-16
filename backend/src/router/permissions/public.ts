@@ -1,6 +1,6 @@
 import type { RoutesCollection } from "@/shared/types/routes";
-import createOAuthHandler from "@/auth/oauth/handlers/oauth-redirect";
-import createOAuthCallbackHandler from "@/auth/oauth/handlers/oauth-callback";
+import createOAuthHandler from "@/auth/controllers/oauth-redirect";
+import createOAuthCallbackHandler from "@/auth/controllers/oauth-callback";
 
 const publicRoutes: RoutesCollection = [
   {

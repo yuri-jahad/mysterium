@@ -1,18 +1,11 @@
-import { protect } from "@/router/guards/auth-guard";
+import { protect } from "@/auth/guards/oauth-guard";
 
 import type {
   HttpMethod,
   RouteHandler,
   RoutesCollection,
 } from "@/shared/types/routes";
-import test from "@/router/handlers/test";
 
-const protectedRoutes: RoutesCollection = [
-  {
-    method: "get",
-    handler: protect(test),
-    key: "test",
-  },
-];
+const protectedRoutes: RoutesCollection = [];
 
 export default protectedRoutes;

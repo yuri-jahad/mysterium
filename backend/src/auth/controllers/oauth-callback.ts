@@ -1,8 +1,7 @@
 import type { RouteHandler } from "@/shared/types/routes";
 import type { OAuthProvidersKeys } from "@/shared/types/oauth-providers";
-import type { OAuthProviderConfig, OAuthConfig } from "@/shared/types/oauth-normalized";
-import { oauthProviders } from "@/auth/oauth/providers/oauth";
-import OauthCallbackService from "@/auth/oauth/services/oauth-callback";
+import { oauthConfig } from "@/auth/config/oauth-config";
+import OauthCallbackService from "@/auth/services/oauth-callback";
 
 /**
  * Generic OAuth callback handler
@@ -14,7 +13,7 @@ const oauthCallbackService = new OauthCallbackService();
 const oAuthCallbackHandler =
   (provider: OAuthProvidersKeys): RouteHandler =>
   async (req: Request) => {
-    const config = oauthProviders[provider];
+    const config = oauthConfig[provider];
 
     const url = new URL(req.url);
     const code = url.searchParams.get("code");

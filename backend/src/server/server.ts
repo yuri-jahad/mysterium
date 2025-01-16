@@ -1,7 +1,7 @@
-import RoutesManager from "@/router/manager";
-import loadData from "@/config/data/load-data";
+import RoutesManager from "@/router/registry/route-manager";
+import loadData from "@/games/bombparty/data/load-data";
 import routes from "@/router";
-
+import createRoom from "@/server/websocket/create-room";
 /**
  * HTTP request handler for the server
  */
@@ -43,9 +43,19 @@ Bun.serve({
   websocket: {
     open(ws) {
       console.log("client connecté !");
+      console.log(ws.ping());
     },
-    async message(ws, message) {
+    async message(ws, message: string | Buffer) {
       console.log(`Message reçu: ${message}`);
+      const messageString =
+        message instanceof Buffer ? message.toString("utf-8") : message;
+
+      const parsedMessage = JSON.parse(messageString);
+      switch (parsedMessage.type) {
+        case "CREATE_ROOM":
+          createRoom(parsedMessage);
+          break;
+      }
       ws.send(`Message envoyé au client`);
     },
     close(ws) {
