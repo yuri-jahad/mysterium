@@ -1,4 +1,4 @@
-import type { OAuthConfig } from "@/shared/types/oauth-normalized";
+import type { OAuthConfig } from "@/auth/types/oauth-normalized";
 
 export const oauthConfig: OAuthConfig = {
   discord: {

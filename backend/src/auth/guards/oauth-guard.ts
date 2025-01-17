@@ -1,4 +1,4 @@
-import type { RouteHandler } from "@/shared/types/routes";
+import type { RouteHandler } from "@/router/types/routes";
 import { jwtVerify } from "jose";
 
 /**

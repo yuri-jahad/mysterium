@@ -1,4 +1,4 @@
-import type { RoutesCollection } from "@/shared/types/routes";
+import type { RoutesCollection } from "@/router/types/routes";
 import createOAuthHandler from "@/auth/controllers/oauth-redirect";
 import createOAuthCallbackHandler from "@/auth/controllers/oauth-callback";
 

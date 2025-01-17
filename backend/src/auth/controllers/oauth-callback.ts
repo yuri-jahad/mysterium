@@ -1,5 +1,5 @@
-import type { RouteHandler } from "@/shared/types/routes";
-import type { OAuthProvidersKeys } from "@/shared/types/oauth-providers";
+import type { RouteHandler } from "@/router/types/routes";
+import type { OAuthProvidersKeys } from "@/auth/types/oauth-providers";
 import { oauthConfig } from "@/auth/config/oauth-config";
 import OauthCallbackService from "@/auth/services/oauth-callback";
 

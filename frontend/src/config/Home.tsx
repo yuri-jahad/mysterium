@@ -9,6 +9,7 @@ const Home = () => {
     sendMessage({
       type: "CREATE_ROOM",
       roomName: "CHEZ MOMOY",
+      flag:"fr",
       hostname: "Mohamed",
       maxPlayers: 5,
     });

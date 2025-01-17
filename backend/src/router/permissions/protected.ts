@@ -4,7 +4,7 @@ import type {
   HttpMethod,
   RouteHandler,
   RoutesCollection,
-} from "@/shared/types/routes";
+} from "@/router/types/routes";
 
 const protectedRoutes: RoutesCollection = [];
 

@@ -1,8 +1,5 @@
-import type {
-  OAuthProviderConfig,
-  OAuthConfig,
-} from "@/shared/types/oauth-normalized";
-import type { OAuthProvidersKeys } from "@/shared/types/oauth-providers";
+import type { OAuthConfig } from "@/auth/types/oauth-normalized";
+import type { OAuthProvidersKeys } from "@/auth/types/oauth-providers";
 
 export default class OAuthRedirectService {
   public createRedirect(

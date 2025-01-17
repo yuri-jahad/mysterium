@@ -1,8 +1,8 @@
 import type {
   OAuthProviderConfig,
   OAuthConfig,
-} from "@/shared/types/oauth-normalized";
-import type { OAuthProvidersKeys } from "@/shared/types/oauth-providers";
+} from "@/auth/types/oauth-normalized";
+import type { OAuthProvidersKeys } from "@/auth/types/oauth-providers";
 import { SignJWT } from "jose";
 
 export default class OauthCallbackService {

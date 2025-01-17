@@ -1,4 +1,4 @@
-import type { RouteHandler } from "@/shared/types/routes";
+import type { RouteHandler } from "@/router/types/routes";
 
 export default class RouteCollection {
   private handlers: Record<string, RouteHandler> = {};

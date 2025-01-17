@@ -1,4 +1,7 @@
-import type { OAuthProviders, OAuthProvidersKeys } from "@/shared/types/oauth-providers";
+import type {
+  OAuthProviders,
+  OAuthProvidersKeys,
+} from "@/auth/types/oauth-providers";
 
 export interface NormalizedUser {
   id: string;
@@ -6,7 +9,9 @@ export interface NormalizedUser {
   username: string;
 }
 
-export interface OAuthProviderConfig<T extends OAuthProviders[keyof OAuthProviders]> {
+export interface OAuthProviderConfig<
+  T extends OAuthProviders[keyof OAuthProviders]
+> {
   name: string;
   authUrl: string;
   tokenUrl: string;
