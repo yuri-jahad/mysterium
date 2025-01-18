@@ -1,3 +1,7 @@
+import type {
+  BroadCastRooms,
+  BroadCastRoomsContent,
+} from "@/server/events/types/broadcast-rooms";
 import type { RoomConfiguration } from "@/core/types/room";
 import type { GameName } from "@/core/types/games-manager";
 import Rooms from "@/core/rooms";
@@ -24,6 +28,14 @@ export default class GamesManager {
     this.games.set(game, new Rooms());
   }
 
+  getRoomInfos(): BroadCastRoomsContent {
+    let roomsInfos = new Set<BroadCastRooms[]>();
+    for (let [gameName, rooms] of this.games) {
+      roomsInfos.add(rooms.getRoomsInfo());
+    }
+    console.log(roomsInfos, "roomsIINFOS")
+    return roomsInfos;
+  }
   public resetGames() {
     this.initializeGames();
   }
@@ -36,6 +48,7 @@ export default class GamesManager {
 
   addRoom(roomConfiguration: RoomConfiguration) {
     const targetRooms = this.games.get(roomConfiguration.gameName);
+    console.log({targetRooms, game:this.games, roomConfiguration})
     if (!targetRooms) return;
 
     targetRooms.addRoom(new Room(roomConfiguration));

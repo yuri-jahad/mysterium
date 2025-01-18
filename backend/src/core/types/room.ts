@@ -8,6 +8,6 @@ export interface RoomConfiguration {
   hostName: string;
   countryCode: CountryCode;
   accessToken: string;
-  isPrivate: boolean;
+  isPublic: boolean;
   createdAt: number;
 }

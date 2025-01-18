@@ -1,0 +1,20 @@
+Auth:
+  - username
+  - token
+  - service:
+
+CREATE_ROOM:
+  - code
+  - temps de création
+  - Nom de la room
+  - flag
+  - private/public
+
+JOIN_ROOM:
+  - code
+
+Rooms: room[]
+
+Game:
+  - players
+  -

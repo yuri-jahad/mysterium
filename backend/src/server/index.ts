@@ -2,7 +2,8 @@ import type { ServerWebSocket } from "bun";
 import RoutesManager from "@/router/registry/route-manager";
 import loadData from "@/games/bombparty/data/load-data";
 import routes from "@/router";
-import createRoom from "@/server/websockets/inbound/create-room";
+import createRoom from "@/server/events/client/create-room";
+import broadcastRooms from "./events/server/broadcast-rooms";
 /**
  * HTTP request handler for the server
  */
@@ -44,7 +45,10 @@ Bun.serve({
   websocket: {
     open(ws: ServerWebSocket<unknown>) {
       console.log("client connecté !");
-      console.log(ws.ping());
+      ws.send(JSON.stringify({
+        type:"BROADCAST_ROOMS", 
+        ...broadcastRooms()
+      }))
     },
     async message(ws: ServerWebSocket<unknown>, message: string | Buffer) {
       console.log(`Message reçu: ${message}`);
