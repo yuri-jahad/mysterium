@@ -1,6 +1,6 @@
-import "./App.css";
-import Home from "./config/Home";
-import useWebSocket from "./hook/useWebSocket";
+import '@/assets/styles/App.css'
+import Home from '@/pages/Home';
+import useWebSocket from "@/websocket/hooks/useWebSocket";
 
 function App() {
   useWebSocket();

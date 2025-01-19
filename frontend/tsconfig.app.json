@@ -9,7 +9,7 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]  // Ajout de cette configuration
+      "@/*": ["src/*"] // Ajout de cette configuration
     },
 
     /* Bundler mode */
@@ -27,5 +27,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "types/websocket.ts"]
+  "include": ["src", "src/websocket/types/websocket.ts"]
 }

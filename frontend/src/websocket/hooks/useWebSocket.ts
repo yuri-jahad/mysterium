@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { SocketEvents } from "@/websocket/types/websocket";
 
-
 export default function useWebSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
@@ -19,8 +18,7 @@ export default function useWebSocket() {
 
     socketRef.current.addEventListener("message", (event) => {
       console.log("Message reçu:", event.data);
-      console.log(event.data)
-      
+      console.log(event.data);
     });
 
     socketRef.current.addEventListener("close", () => {

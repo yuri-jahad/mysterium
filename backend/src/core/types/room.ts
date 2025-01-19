@@ -6,7 +6,7 @@ export type RoomContent = string;
 export interface RoomConfiguration {
   gameName: GameName;
   hostName: string;
-  countryCode: CountryCode;
+  //countryCode: CountryCode;
   accessToken: string;
   isPublic: boolean;
   createdAt: number;

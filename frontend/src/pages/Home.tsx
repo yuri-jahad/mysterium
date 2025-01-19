@@ -1,6 +1,6 @@
-import useWebSocket from "@/hook/useWebSocket";
 import React, { useState } from "react";
-
+import useWebSocket from "@/websocket/hooks/useWebSocket";
+import type { Roo}
 type GameType = "Bombparty" | "Popsauce";
 type RoomVisibility = "public" | "private";
 
@@ -10,13 +10,6 @@ interface CreateRoomForm {
   roomName: string;
 }
 
-interface CreateRoomMessage {
-  type: "CREATE_ROOM";
-  roomName: string;
-  gameName: GameType;
-  isPrivate: boolean;
-  hostname: string;
-}
 
 const Home = () => {
   const { sendMessage } = useWebSocket();
@@ -31,11 +24,12 @@ const Home = () => {
 
     if (!formData.roomName.trim()) return;
 
-    const message: CreateRoomMessage = {
+    const message: CreateRoom = {
       type: "CREATE_ROOM",
       roomName: formData.roomName.trim(),
       gameName: formData.gameName,
       isPrivate: formData.visibility === "private",
+      createdAt: Date.now(),
       hostname: "Mohamed",
     };
 

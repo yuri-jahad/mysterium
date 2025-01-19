@@ -32,7 +32,6 @@ export default class Rooms {
       roomId: room.roomId,
       gameName: room.roomCreated.gameName,
       createAt: room.roomCreated.createdAt,
-      countryCode: room.roomCreated.countryCode,
       isPublic: room.roomCreated.isPublic,
     }));
   }
