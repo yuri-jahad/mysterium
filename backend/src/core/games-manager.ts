@@ -33,7 +33,6 @@ export default class GamesManager {
     for (let [gameName, rooms] of this.games) {
       roomsInfos.add(rooms.getRoomsInfo());
     }
-    console.log(roomsInfos, "roomsIINFOS")
     return roomsInfos;
   }
   public resetGames() {
@@ -48,7 +47,6 @@ export default class GamesManager {
 
   addRoom(roomConfiguration: RoomConfiguration) {
     const targetRooms = this.games.get(roomConfiguration.gameName);
-    console.log({targetRooms, game:this.games, roomConfiguration})
     if (!targetRooms) return;
 
     targetRooms.addRoom(new Room(roomConfiguration));

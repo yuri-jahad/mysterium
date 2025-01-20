@@ -26,13 +26,12 @@ export default class Rooms {
   }
 
   getRoomsInfo(): BroadCastRooms[] {
-    console.log(this.#rooms, "xddd")
     return Array.from(this.#rooms.values()).map((room) => ({
       hostName: room.roomCreated.hostName,
       roomId: room.roomId,
       gameName: room.roomCreated.gameName,
       createAt: room.roomCreated.createdAt,
-      isPublic: room.roomCreated.isPublic,
+      isPrivate: room.roomCreated.isPrivate,
     }));
   }
 

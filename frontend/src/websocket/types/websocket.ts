@@ -13,7 +13,7 @@ export interface JoinRoom extends BaseMessage {
   playerName: string;
 }
 
-interface CreateRoom extends BaseMessage {
+export interface CreateRoom extends BaseMessage {
   type: "CREATE_ROOM";
   roomName: string;
   gameName: string;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import useWebSocket from "@/websocket/hooks/useWebSocket";
-import type { Roo}
+import type { CreateRoom } from "@/websocket/types/websocket";
+
 type GameType = "Bombparty" | "Popsauce";
 type RoomVisibility = "public" | "private";
 

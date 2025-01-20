@@ -5,7 +5,7 @@ export interface BroadCastRooms {
   roomId: string;
   gameName: GameName;
   createAt: number;
-  isPublic: boolean;
+  isPrivate: boolean;
 }
 
 export type BroadCastRoomsContent = Set<BroadCastRooms[]>;
