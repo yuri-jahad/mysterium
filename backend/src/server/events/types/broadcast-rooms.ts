@@ -1,7 +1,7 @@
 import type { GameName } from "@/core/types/games-manager";
 
 export interface BroadCastRooms {
-  hostName: string;
+  hostname: string;
   roomId: string;
   gameName: GameName;
   createAt: number;

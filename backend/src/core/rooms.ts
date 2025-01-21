@@ -27,7 +27,7 @@ export default class Rooms {
 
   getRoomsInfo(): BroadCastRooms[] {
     return Array.from(this.#rooms.values()).map((room) => ({
-      hostName: room.roomCreated.hostName,
+      hostname: room.roomCreated.hostname,
       roomId: room.roomId,
       gameName: room.roomCreated.gameName,
       createAt: room.roomCreated.createdAt,
