@@ -12,22 +12,22 @@ import {
    Checks if user exists in storage and manages token generation
 */
 
-export default function useAuthRegister(): void {
+export function getAuthUser(): UserAuth {
   const userStorage: UserAuth | undefined = getStorage("mysterium");
-
   if (userStorage) {
-    if (userStorage.token) {
-      console.log("Token exists:", userStorage.token);
-    } else {
-      const item = { token: generateToken() };
-      updateStorageElements("mysterium", item);
-    }
-  } else {
-    const newUserStorage: UserAuth = {
-      username: generateRandomName(),
-      token: generateToken(),
-      avatar: null
-    };
-    setStorage("mysterium", newUserStorage);
+    if (userStorage.token) return userStorage;
+    const token = generateToken();
+    const updatedUser = { ...userStorage, token };
+
+    updateStorageElements("mysterium", { token });
+    return updatedUser;
   }
+  const newUserStorage: UserAuth = {
+    username: generateRandomName(),
+    token: generateToken(),
+    avatar: null,
+  };
+
+  setStorage("mysterium", newUserStorage);
+  return newUserStorage;
 }

@@ -1,5 +1,5 @@
 export interface UserAuth {
-  username: string;
+  username: string | null;
   token: string | null;
   avatar: string | null;
 }
