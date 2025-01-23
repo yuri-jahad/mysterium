@@ -54,7 +54,7 @@ export const roomMachine = createMachine(
         on: {
           BROADCAST_ROOMS: {
             actions: [
-              assign((context, event) => ({
+              assign((context, event:any) => ({
                 ...context,
                 rooms: event.rooms,
               })),
