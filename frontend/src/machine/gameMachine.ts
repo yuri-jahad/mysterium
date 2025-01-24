@@ -29,7 +29,7 @@ export const roomMachine = createMachine(
         token: null,
         avatar: null,
       },
-      rooms: [],
+      rooms: ["test"],
     } as RoomContext,
     states: {
       checking: {
