@@ -4,7 +4,7 @@ import type { SocketEvents } from "@/websocket/types/websocket";
 export default function useWebSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
-  const [rooms, setRooms] = useState(null)
+
   const SERVER_URL = import.meta.env.VITE_LOCAL_SERVER || "ws://localhost:3000";
 
   useEffect(() => {
@@ -18,12 +18,12 @@ export default function useWebSocket() {
     });
 
     socketRef.current.addEventListener("message", (event) => {
-       if (event.data) {
-        const data = JSON.parse(event.data); 
+      if (event.data) {
+        const data = JSON.parse(event.data);
         if (data.type === "BROADCAST_ROOMS") {
-          setRooms(data)
+          console.log(data);
         }
-       }
+      }
     });
 
     socketRef.current.addEventListener("close", () => {
@@ -55,6 +55,5 @@ export default function useWebSocket() {
     socket: socketRef.current,
     isConnected,
     sendMessage,
-    rooms
   };
 }

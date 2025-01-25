@@ -4,7 +4,7 @@ import useWebSocket from "@/websocket/hooks/useWebSocket";
 import useAuthRegister from '@/auth/hooks/useAuthRegister';
 function App() {
   useWebSocket();
-  useAuthRegister();
+  //useAuthRegister();
   return (
     <div className="bg-gray-800 h-[100vh] flex items-center justify-center">
       <Home />
