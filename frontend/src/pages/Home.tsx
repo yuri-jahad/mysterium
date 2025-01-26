@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import useWebSocket from "@/websocket/hooks/useWebSocket";
-import type { CreateRoom } from "@/websocket/types/websocket";
+import React, { useEffect, useState } from "react";
+import useWebSocket from "@/websocket/machine/useWebSocket";
 import { Github } from "lucide-react";
+import { useMachine, createActorContext } from "@xstate/react";
+import machine from "@/machine/gameMachine";
+import type { CreateRoom } from "@/websocket/types/websocket";
 
+// Icons components
 const DiscordIcon = () => (
   <svg
     viewBox="0 -28.5 256 256"
@@ -49,16 +52,30 @@ interface CreateRoomForm {
 
 const Home = () => {
   const { sendMessage } = useWebSocket();
+  const [state, send] = useMachine(machine);
+  const [username, setUsername] = useState("");
   const [formData, setFormData] = useState<CreateRoomForm>({
     gameName: "Bombparty",
     visibility: "public",
     roomName: "",
   });
 
+  useEffect(() => {
+    console.log("cc");
+    send({ type: "CONNECTED" });
+  }, []);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!formData.roomName.trim()) return;
+    if (!formData.roomName.trim() || !username.trim()) return;
+
+    send({
+      type: "CREATE_ROOM",
+      roomName: formData.roomName.trim(),
+      gameName: formData.gameName,
+      isPrivate: formData.visibility === "private",
+    });
 
     const message: CreateRoom = {
       type: "CREATE_ROOM",
@@ -66,7 +83,7 @@ const Home = () => {
       gameName: formData.gameName,
       isPrivate: formData.visibility === "private",
       createdAt: Date.now(),
-      hostname: "Mohamed",
+      hostname: username,
     };
 
     sendMessage(message);
@@ -78,10 +95,49 @@ const Home = () => {
       className="max-w-md mx-auto p-6 rounded-lg border border-gray-500 w-2/5 h-4/5"
       role="main"
     >
+      {/* Connection state display */}
+      {state.value === "connecting" && (
+        <div className="bg-yellow-500/10 text-yellow-500 p-3 rounded-lg mb-4">
+          Connexion en cours...
+        </div>
+      )}
+
+      {state.value === "disconnected" && state.context.error && (
+        <div className="bg-red-500/10 text-red-500 p-3 rounded-lg mb-4">
+          {state.context.error}
+        </div>
+      )}
+
       <div className="mb-8 space-y-4">
         <h1 className="text-2xl font-bold text-center text-white mb-6">
-          Connexion
+          {state.matches("connected") ? "Créer une partie" : "Connexion"}
         </h1>
+
+        <div className="rooms">
+          {state.matches("connected") && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold text-white">
+                Rooms disponibles
+              </h2>
+              {state.context.rooms.length === 0 ? (
+                <p className="text-gray-400">Aucune room disponible</p>
+              ) : (
+                <ul className="space-y-2">
+                  {state.context.rooms.map((room, index) => (
+                    <li
+                      key={index}
+                      className="p-3 bg-gray-700 rounded-lg text-white hover:bg-gray-600 transition-colors"
+                    >
+                      {room}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Social login buttons */}
         <div
           className="grid grid-cols-3 gap-4"
           role="group"
@@ -90,25 +146,24 @@ const Home = () => {
           <button
             className="flex items-center justify-center p-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all duration-300"
             aria-label="Se connecter avec Github"
-            title="Se connecter avec Github"
           >
             <Github className="w-6 h-6" aria-hidden="true" />
           </button>
           <button
             className="flex items-center justify-center p-3 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all duration-300"
             aria-label="Se connecter avec Google"
-            title="Se connecter avec Google"
           >
             <GoogleIcon />
           </button>
           <button
             className="flex items-center justify-center p-3 bg-[#5865F2] hover:bg-[#4752C4] text-white rounded-lg transition-all duration-300"
             aria-label="Se connecter avec Discord"
-            title="Se connecter avec Discord"
           >
             <DiscordIcon />
           </button>
         </div>
+
+        {/* Separator */}
         <div className="relative my-6" role="separator" aria-label="ou">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-600"></div>
@@ -119,15 +174,16 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Section informations utilisateur */}
+      {/* User information section */}
       <div className="space-y-4 mb-6">
         <div>
           <input
             type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             placeholder="Entrez votre pseudo"
             aria-label="Pseudo"
-            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
         <div className="flex items-center space-x-2">
@@ -141,8 +197,7 @@ const Home = () => {
           />
           <label
             htmlFor="avatar"
-            className="flex items-center justify-center px-4 py-2 bg-gray-700 hover:bg-gray-600 
-                     text-white rounded-lg cursor-pointer transition-all duration-300"
+            className="flex items-center justify-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-all duration-300"
             role="button"
           >
             Choisir un avatar
@@ -150,122 +205,120 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Formulaire création de room */}
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-6"
-        aria-label="Création de room"
-      >
-        <div>
-          <label
-            htmlFor="gameSelect"
-            className="block text-sm font-medium text-gray-300 mb-2"
-          >
-            Sélectionner un jeu
-          </label>
-          <select
-            id="gameSelect"
-            value={formData.gameName}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                gameName: e.target.value as GameType,
-              }))
-            }
-            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            aria-label="Type de jeu"
-          >
-            <option value="Bombparty">Bombparty</option>
-            <option value="Popsauce">Popsauce</option>
-          </select>
-        </div>
-
-        <fieldset>
-          <legend className="block text-sm font-medium text-gray-300 mb-2">
-            Visibilité
-          </legend>
-          <div className="flex gap-6" role="radiogroup">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="public"
-                name="visibility"
-                value="public"
-                checked={formData.visibility === "public"}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    visibility: e.target.value as RoomVisibility,
-                  }))
-                }
-                className="mr-2 text-blue-500 focus:ring-blue-500 bg-gray-700 border-gray-600"
-                aria-label="Room publique"
-              />
-              <label htmlFor="public" className="text-gray-300">
-                Public
-              </label>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="private"
-                name="visibility"
-                value="private"
-                checked={formData.visibility === "private"}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    visibility: e.target.value as RoomVisibility,
-                  }))
-                }
-                className="mr-2 text-blue-500 focus:ring-blue-500 bg-gray-700 border-gray-600"
-                aria-label="Room privée"
-              />
-              <label htmlFor="private" className="text-gray-300">
-                Privé
-              </label>
-            </div>
-          </div>
-        </fieldset>
-
-        <div>
-          <label
-            htmlFor="roomName"
-            className="block text-sm font-medium text-gray-300 mb-2"
-          >
-            Nom de la room
-          </label>
-          <input
-            id="roomName"
-            type="text"
-            value={formData.roomName}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                roomName: e.target.value,
-              }))
-            }
-            placeholder="Taper le nom de votre room"
-            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400
-                     focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            required
-            aria-required="true"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={!formData.roomName.trim()}
-          className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg
-                   hover:bg-blue-400 disabled:bg-gray-600 disabled:cursor-not-allowed
-                   transition-colors duration-300 font-medium"
-          aria-disabled={!formData.roomName.trim()}
+      {/* Room creation form */}
+      {state.matches("connected") && (
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+          aria-label="Création de room"
         >
-          Créer ROOM
-        </button>
-      </form>
+          <div>
+            <label
+              htmlFor="gameSelect"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Sélectionner un jeu
+            </label>
+            <select
+              id="gameSelect"
+              value={formData.gameName}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  gameName: e.target.value as GameType,
+                }))
+              }
+              className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Type de jeu"
+            >
+              <option value="Bombparty">Bombparty</option>
+              <option value="Popsauce">Popsauce</option>
+            </select>
+          </div>
+
+          <fieldset>
+            <legend className="block text-sm font-medium text-gray-300 mb-2">
+              Visibilité
+            </legend>
+            <div className="flex gap-6" role="radiogroup">
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="public"
+                  name="visibility"
+                  value="public"
+                  checked={formData.visibility === "public"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      visibility: e.target.value as RoomVisibility,
+                    }))
+                  }
+                  className="mr-2 text-blue-500 focus:ring-blue-500 bg-gray-700 border-gray-600"
+                  aria-label="Room publique"
+                />
+                <label htmlFor="public" className="text-gray-300">
+                  Public
+                </label>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="radio"
+                  id="private"
+                  name="visibility"
+                  value="private"
+                  checked={formData.visibility === "private"}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      visibility: e.target.value as RoomVisibility,
+                    }))
+                  }
+                  className="mr-2 text-blue-500 focus:ring-blue-500 bg-gray-700 border-gray-600"
+                  aria-label="Room privée"
+                />
+                <label htmlFor="private" className="text-gray-300">
+                  Privé
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <div>
+            <label
+              htmlFor="roomName"
+              className="block text-sm font-medium text-gray-300 mb-2"
+            >
+              Nom de la room
+            </label>
+            <input
+              id="roomName"
+              type="text"
+              value={formData.roomName}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  roomName: e.target.value,
+                }))
+              }
+              placeholder="Taper le nom de votre room"
+              className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+              aria-required="true"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={!formData.roomName.trim() || !username.trim()}
+            className="w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-400 disabled:bg-gray-600 disabled:cursor-not-allowed transition-colors duration-300 font-medium"
+            aria-disabled={!formData.roomName.trim() || !username.trim()}
+          >
+            Créer ROOM
+          </button>
+        </form>
+      )}
     </main>
   );
 };

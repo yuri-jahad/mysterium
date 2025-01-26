@@ -1,7 +1,8 @@
-import "@/assets/styles/index.css"
-import Home from '@/pages/Home';
-import useWebSocket from "@/websocket/hooks/useWebSocket";
-import useAuthRegister from '@/auth/hooks/useAuthRegister';
+import "@/assets/styles/index.css";
+import Home from "@/pages/Home";
+import useWebSocket from "@/websocket/machine/useWebSocket";
+import useAuthRegister from "@/auth/hooks/useAuthRegister";
+
 function App() {
   useWebSocket();
   //useAuthRegister();

@@ -1,73 +1,80 @@
-import { createMachine, assign } from "xstate";
-import { getAuthUser } from "@/auth/hooks/useAuthRegister";
-import type { UserAuth } from "@/auth/types/user";
+import { assign, setup } from "xstate";
 
-// Types pour les events websocket
 interface BroadcastRoomsEvent {
   type: "BROADCAST_ROOMS";
   rooms: string[];
 }
 
-// Types pour la machine
-interface RoomContext {
-  auth: UserAuth;
-  rooms: string[];
+interface CreateRoomEvent {
+  type: "CREATE_ROOM";
+  roomName: string;
+  gameName: "Bombparty" | "Popsauce";
+  isPrivate: boolean;
 }
 
 type RoomEvent =
   | { type: "CONNECT" }
   | { type: "CONNECTED" }
+  | { type: "DISCONNECTED" }
+  | CreateRoomEvent
   | BroadcastRoomsEvent;
 
-export const roomMachine = createMachine(
-  {
-    id: "mysterium",
-    initial: "checking",
-    context: {
-      auth: {
-        username: null,
-        token: null,
-        avatar: null,
+const machine = setup({
+  types: {
+    context: {} as {
+      rooms: string[];
+      error: string | null;
+    },
+    events: {} as RoomEvent,
+  },
+}).createMachine({
+  id: "game",
+  initial: "idle",
+  context: {
+    rooms: [],
+    error: null,
+  },
+  states: {
+    idle: {
+      on: {
+        CONNECT: "connecting",
       },
-      rooms: ["test"],
-    } as RoomContext,
-    states: {
-      checking: {
-        entry: assign({
-          auth: () => getAuthUser(),
-        }),
-        on: {
-          "": "disconnected",
+    },
+    connecting: {
+      on: {
+        CONNECTED: "connected",
+        DISCONNECTED: {
+          target: "disconnected",
+          actions: assign({
+            error: () => "La connexion a échoué",
+          }),
         },
       },
-      disconnected: {
-        on: {
-          CONNECT: "connecting",
+    },
+    connected: {
+      on: {
+        BROADCAST_ROOMS: {
+          actions: assign({
+            rooms: ({ event }) => {
+              if (Array.isArray(event) && event[0]) {
+                return event[0];
+              }
+              return [];
+            },
+          }),
         },
+        CREATE_ROOM: {
+          // Ici vous pouvez ajouter des actions pour la création de room
+        },
+        DISCONNECTED: "disconnected",
       },
-      connecting: {
-        on: {
-          CONNECTED: "connected",
-        },
-      },
-      connected: {
-        on: {
-          BROADCAST_ROOMS: {
-            actions: [
-              assign((context, event: BroadcastRoomsEvent | undefined) => ({
-                ...context,
-                rooms: event?.rooms,
-              })),
-            ],
-          },
-        },
+    },
+    disconnected: {
+      on: {
+        CONNECT: "connecting",
       },
     },
   },
-  {
-    types: {} as {
-      context: RoomContext;
-      events: RoomEvent;
-    },
-  }
-);
+});
+
+export default machine;
