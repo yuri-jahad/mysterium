@@ -7,7 +7,7 @@ export default class OAuthRedirectService {
     provider: OAuthProvidersKeys
   ): string {
     const authUrl = new URL(config.authUrl);
-
+    
     authUrl.searchParams.append("client_id", config.clientId);
     authUrl.searchParams.append(
       "redirect_uri",
@@ -15,6 +15,7 @@ export default class OAuthRedirectService {
     );
     authUrl.searchParams.append("response_type", "code");
     authUrl.searchParams.append("scope", config.scopes.join(" "));
+    console.log(authUrl)
     return authUrl.toString();
   }
 }

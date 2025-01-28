@@ -22,7 +22,11 @@ const oAuthCallbackHandler =
       return new Response("Missing authorization code", { status: 400 });
     }
 
-    const token = oauthCallbackService.signedToken(config, provider, code);
+    const token = await oauthCallbackService.signedToken(
+      config,
+      provider,
+      code
+    );
 
     try {
       return new Response(null, {

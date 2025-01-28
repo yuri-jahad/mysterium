@@ -35,13 +35,15 @@ export default class OauthCallbackService {
     code: string
   ) {
     const tokenData = await this.exchangeCodeForToken(config, code, provider);
+    console.log({config})
     const userResponse = await fetch(config.userUrl, {
       headers: {
-        Authorization: `Baerer ${tokenData}`,
+        Authorization: `Bearer ${tokenData}`,
         ...(provider === "twitch" ? { "Client-ID": config.clientId } : {}),
       },
     });
     const userData = await userResponse.json();
+    console.log(userData)
     const normalizedUserData = config.getUserData(userData);
     return normalizedUserData;
   }
@@ -52,6 +54,7 @@ export default class OauthCallbackService {
     code: string
   ) {
     const normalizedUserData = await this.getUserData(config, provider, code);
+    console.log({normalizedUserData})
     const token = await new SignJWT({
       ...normalizedUserData,
       provider: provider,

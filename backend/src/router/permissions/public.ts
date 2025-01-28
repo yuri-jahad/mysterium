@@ -1,6 +1,7 @@
 import type { RoutesCollection } from "@/router/types/routes";
 import createOAuthHandler from "@/auth/controllers/oauth-redirect";
 import createOAuthCallbackHandler from "@/auth/controllers/oauth-callback";
+import createOAuthLogin from "@/auth/controllers/oauth-login";
 
 const publicRoutes: RoutesCollection = [
   {
@@ -32,6 +33,11 @@ const publicRoutes: RoutesCollection = [
     method: "get",
     key: "auth/github/callback",
     handler: createOAuthCallbackHandler("github"),
+  },
+  {
+    method: "get",
+    key: "auth/login",
+    handler: createOAuthLogin(),
   },
 ];
 

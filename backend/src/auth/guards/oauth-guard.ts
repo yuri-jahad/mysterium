@@ -1,10 +1,27 @@
 import type { RouteHandler } from "@/router/types/routes";
 import { jwtVerify } from "jose";
+import type { JWTPayload } from "jose";
+
+interface AuthUser {
+  [key: string]: string | number;
+}
+
+function convertToAuthUser(payload: JWTPayload): AuthUser {
+  const authUser: AuthUser = {};
+
+  for (const [key, value] of Object.entries(payload)) {
+    if (typeof value === "string" || typeof value === "number") {
+      authUser[key] = value;
+    }
+  }
+
+  return authUser;
+}
 
 /**
  * Authentication middleware that verifies JWT token from cookies
  */
-async function oauthGard(req: Request) {
+export async function oauthGuard(req: Request): Promise<AuthUser | Response> {
   try {
     const cookieHeader = req.headers.get("cookie");
     if (!cookieHeader) {
@@ -17,12 +34,18 @@ async function oauthGard(req: Request) {
     }
 
     try {
-      await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET));
-      return true;
-    } catch {
+      const { payload } = await jwtVerify(
+        token,
+        new TextEncoder().encode(process.env.JWT_SECRET)
+      );
+
+      return convertToAuthUser(payload);
+    } catch (error) {
+      console.error("Token verification failed:", error);
       return new Response("Invalid Token", { status: 401 });
     }
-  } catch {
+  } catch (error) {
+    console.error("Authentication error:", error);
     return new Response("Authentication error", { status: 500 });
   }
 }
@@ -32,12 +55,24 @@ async function oauthGard(req: Request) {
  */
 export function protect(handler: RouteHandler): RouteHandler {
   return async (req: Request) => {
-    const authResult = await oauthGard(req);
+    const authResult = await oauthGuard(req);
 
-    if (authResult) {
-      return handler(req);
+    if (authResult instanceof Response) {
+      return authResult;
     }
 
-    return authResult as Response;
+    const enhancedReq = new Request(req.url, {
+      ...req,
+      headers: new Headers(req.headers),
+    });
+
+    Object.defineProperty(enhancedReq, "user", {
+      value: authResult,
+      writable: false,
+    });
+
+    return handler(enhancedReq as Request & { user: AuthUser });
   };
 }
+
+export type ProtectedRequest = Request & { user: AuthUser };
