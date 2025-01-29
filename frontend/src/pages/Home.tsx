@@ -51,7 +51,6 @@ interface CreateRoomForm {
 }
 
 const Home = () => {
-  const { sendMessage } = useWebSocket();
   const [state, send] = useMachine(machine);
   const [username, setUsername] = useState("");
   const [formData, setFormData] = useState<CreateRoomForm>({
@@ -86,7 +85,7 @@ const Home = () => {
       hostname: username,
     };
 
-    sendMessage(message);
+    
     setFormData((prev) => ({ ...prev, roomName: "" }));
   };
 

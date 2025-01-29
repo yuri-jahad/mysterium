@@ -18,3 +18,7 @@ export default function generateToken(size: number = 16): string {
   }
   return token;
 }
+
+
+
+

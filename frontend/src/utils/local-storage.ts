@@ -8,12 +8,12 @@ export const setStorage = <T>(storageName: string, value: T): void => {
   localStorage.setItem(storageName, JSON.stringify(value));
 };
 
-export const getStorage = <T>(storageName: string): T | undefined => {
+export const getStorage = (storageName: string) => {
   if (!storageName) return;
   const storage = localStorage.getItem(storageName);
   if (!storage) return;
   try {
-    return JSON.parse(storage) as T;
+    return JSON.parse(storage);
   } catch {
     return;
   }
@@ -24,7 +24,7 @@ export const updateStorageElements = <T extends Record<string, unknown>>(
   elements: Partial<T>
 ): void => {
   if (!storageName) return;
-  const storage = getStorage<T>(storageName);
+  const storage = getStorage(storageName);
   if (!storage) return;
   const newStorage = {
     ...storage,

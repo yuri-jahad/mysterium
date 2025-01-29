@@ -13,9 +13,11 @@ import {
 */
 
 export function getAuthUser(): UserAuth {
-  const userStorage: UserAuth | undefined = getStorage("mysterium");
+  const userStorage: UserAuth = getStorage("mysterium");
   if (userStorage) {
-    if (userStorage.token) return userStorage;
+    if (userStorage.token) {
+      return userStorage;
+    }
     const token = generateToken();
     const updatedUser = { ...userStorage, token };
 
