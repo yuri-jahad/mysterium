@@ -32,7 +32,6 @@ const oAuthCallbackHandler =
       return new Response(null, {
         status: 302,
         headers: {
-          Location: "/success",
           ...(process.env.NODE_ENV !== "prod"
             ? {
                 "Access-Control-Allow-Credentials": "true",
