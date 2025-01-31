@@ -1,12 +1,27 @@
 import "@/assets/styles/index.css";
 import Home from "@/pages/Home";
+import { globalMachine } from "@/websocket/machine/global-machine";
+import { useActor } from "@xstate/react";
 
-function App() {
+const App = () => {
+  const [state, send] = useActor(globalMachine);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.has("code")) {
+      send({ type: "" });
+    }
+  }, [location.search]);
   return (
-    <div className="bg-gray-800 h-[100vh] flex items-center justify-center">
+    <>
+      {/* Debug des données utilisateur */}
+      {state.context.auth && (
+        <div>
+          <pre>{JSON.stringify(state.context.auth, null, 2)}</pre>
+        </div>
+      )}
       <Home />
-    </div>
+    </>
   );
-}
-
+};
 export default App;
