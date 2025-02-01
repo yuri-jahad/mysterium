@@ -1,4 +1,4 @@
-import { assign, fromPromise, setup} from "xstate";
+import { assign, fromPromise, setup } from "xstate";
 import { getAuthUser } from "@/auth/hooks/useAuthRegister";
 import type { RoomInfos } from "@/websocket/types/client/room.ts";
 import { UserAuth } from "@/auth/types/user";
@@ -27,7 +27,6 @@ type Events =
   | { type: "ROOMS.UPDATE"; rooms: RoomInfos[] }
   | { type: "START_AUTH"; code: string };
 
-// Service d'authentification séparé
 const authService = async () => {
   const response = await fetch(`${envConfig.server}/auth/login`, {
     method: "GET",
@@ -69,6 +68,9 @@ const socketMachine = setup({
           },
         },
       },
+    },
+    authenticate: {
+      on:{}
     },
     authenticating: {
       invoke: {
