@@ -22,20 +22,11 @@ type Events =
   | { type: "AUTH.ERROR"; error: string }
   | { type: "SOCKET.CONNECT" }
   | { type: "SOCKET.CONNECTED" }
-  | { type: "SOCKET.ERROR"; error: string }
+  | { type: "SOCKET.ERROR"; error: unknown }
   | { type: "SOCKET.DISCONNECT" }
   | { type: "ROOMS.UPDATE"; rooms: RoomInfos[] }
-  | { type: "START_AUTH"; code: string };
-
-const authService = async () => {
-  const response = await fetch(`${envConfig.server}/auth/login`, {
-    method: "GET",
-    credentials: "include",
-  });
-
-  if (!response.ok) throw new Error("Authentication failed");
-  return response.json();
-};
+  | { type: "START_AUTH" }
+  | { type: "AUTH.CODE_RECEIVED"; code: string };
 
 const socketMachine = setup({
   types: {
@@ -43,11 +34,20 @@ const socketMachine = setup({
     events: {} as Events,
   },
   actors: {
-    authenticate: fromPromise(async () => await authService()),
+    authenticate: fromPromise(async () => {
+      const response = await fetch(`${envConfig.server}/auth/login`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      if (!response.ok) throw new Error("Authentication failed");
+      console.log(await response.json())
+      return response.json();
+    }),
   },
 }).createMachine({
   id: "websocket",
-  initial: "initializing",
+  initial: "connecting",
   context: {
     auth: {
       service: null,
@@ -57,72 +57,24 @@ const socketMachine = setup({
     error: null,
   },
   states: {
-    initializing: {
-      on: {
-        "AUTH.SERVICE": {
-          target: "authenticating",
-          actions: ({ context, event }) => {
-            if (!event.service) return;
-            context.auth.service = event.service;
-            window.location.href = `${envConfig.server}/auth/${event.service}`;
-          },
-        },
-      },
-    },
-    authenticate: {
-      on:{}
-    },
-    authenticating: {
-      invoke: {
-        src: "authenticate",
-        onDone: {
-          target: "authenticated",
-          actions: assign({
-            auth: ({ event }) => ({
-              ...event.output,
-              error: null,
-            }),
-          }),
-        },
-        onError: {
-          target: "error",
-          actions: assign({
-            error: ({ event }) => event.error.message,
-            auth: ({ context }) => ({
-              ...context.auth,
-              service: null,
-            }),
-          }),
-        },
-      },
-    },
-    authenticated: {
-      on: {
-        "SOCKET.CONNECT": "connecting",
-        "SOCKET.DISCONNECT": {
-          target: "initializing",
-          actions: assign({
-            rooms: () => [],
-            error: () => null,
-          }),
-        },
-      },
-    },
     connecting: {
       entry: ({ context }) => {
         const ws = new WebSocket(`${envConfig.ws}/ws`);
 
-        ws.onopen = () => {};
+        ws.onopen = () => {
+         ;
+        };
 
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          if (data.type === "auth_success") {
-            return { type: "SOCKET.CONNECTED" };
-          }
         };
 
         ws.onerror = () => {
-          return { type: "SOCKET.ERROR", error: "WebSocket connection failed" };
+          
+        };
+
+        ws.onclose = () => {
+          
         };
       },
       on: {
@@ -130,13 +82,36 @@ const socketMachine = setup({
         "SOCKET.ERROR": {
           target: "error",
           actions: assign({
-            error: ({ event }) => event.error,
+            error: ({ event }) => {
+              if (typeof event.error === "string") {
+                return event.error;
+              }
+              return "An unknown error occurred";
+            },
           }),
         },
       },
     },
     connected: {
       on: {
+        "AUTH.SERVICE": {
+          actions: ({ context, event }) => {
+            if (!event.service) return;
+            context.auth.service = event.service;
+            window.location.href = `${envConfig.server}/auth/${event.service}`;
+          },
+        },
+        "AUTH.CODE_RECEIVED": {
+          target: "authenticating",
+        },
+        "AUTH.SUCCESS": {
+          actions: assign({
+            auth: ({ event }) => ({
+              ...event.data,
+              error: null,
+            }),
+          }),
+        },
         "ROOMS.UPDATE": {
           actions: assign({
             rooms: ({ event }) => event.rooms,
@@ -145,11 +120,16 @@ const socketMachine = setup({
         "SOCKET.ERROR": {
           target: "error",
           actions: assign({
-            error: ({ event }) => event.error,
+            error: ({ event }) => {
+              if (typeof event.error === "string") {
+                return event.error;
+              }
+              return "An unknown error occurred";
+            },
           }),
         },
         "SOCKET.DISCONNECT": {
-          target: "initializing",
+          target: "connecting",
           actions: assign({
             auth: ({ context }) => ({ ...context.auth, service: null }),
             rooms: () => [],
@@ -158,9 +138,35 @@ const socketMachine = setup({
         },
       },
     },
+    authenticating: {
+      actors: {
+        auth: "authenticate",
+      },
+      on: {
+        "AUTH.SUCCESS": {
+          target: "connected",
+          actions: assign({
+            auth: ({ event }) => ({
+              ...event.data,
+              error: null,
+            }),
+          }),
+        },
+        "AUTH.ERROR": {
+          target: "error",
+          actions: assign({
+            error: ({ event }) => {
+              if (typeof event.error === "string") {
+                return event.error;
+              }
+              return "An unknown error occurred";
+            },
+          }),
+        },
+      },
+    },
     error: {
       on: {
-        "AUTH.SERVICE": "authenticating",
         "SOCKET.CONNECT": "connecting",
       },
     },
