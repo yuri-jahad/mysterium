@@ -3,16 +3,22 @@ import Home from "@/pages/Home";
 import { globalMachine } from "@/websocket/machine/global-machine";
 import { useActor } from "@xstate/react";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const App = () => {
   const [state, send] = useActor(globalMachine);
 
   useEffect(() => {
-    const code = new URLSearchParams(location.search).get("code");
-    if (code) {
-      send({ type: "AUTH.CODE_RECEIVED", code});
+   
+    console.log(location.pathname);
+
+    if (location.pathname === "/auth/callback") {
+      console.log("coucou")
+      send({ type:"START_AUTH"});
+       console.log({ state, send });
     }
-  }, [location.search]);
+  }, [location.pathname]);
+
   return (
     <>
       {/* Debug des données utilisateur */}

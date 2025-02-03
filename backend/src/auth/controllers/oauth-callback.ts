@@ -28,17 +28,13 @@ const oAuthCallbackHandler =
       code
     );
 
+    console.log({token}, "cc")
+
     try {
       return new Response(null, {
         status: 302,
         headers: {
-          location: `${import.meta.env.FRONTEND_URL}`,
-          ...(process.env.NODE_ENV !== "prod"
-            ? {
-                "Access-Control-Allow-Credentials": "true",
-                "Access-Control-Allow-Origin": process.env.FRONTEND_URL,
-              }
-            : {}),
+          location: `${import.meta.env.FRONTEND_URL}/auth/callback`,
           "Set-Cookie": `auth=${token}; HttpOnly; Path=/; Max-Age=${
             24 * 60 * 60
           }; SameSite=Strict${

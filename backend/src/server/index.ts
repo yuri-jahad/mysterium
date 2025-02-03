@@ -4,28 +4,52 @@ import loadData from "@/games/bombparty/data/load-data";
 import routes from "@/router";
 import createRoom from "@/server/events/client/create-room";
 import broadcastRooms from "./events/server/broadcast-rooms";
+
+// Fonction utilitaire pour ajouter les en-têtes CORS
+const addCorsHeaders = (response: Response): Response => {
+  const headers = new Headers(response.headers);
+  headers.set("Access-Control-Allow-Origin", import.meta.env.FRONTEND_URL || "");
+  headers.set("Access-Control-Allow-Credentials", "true");
+  headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  headers.set("Access-Control-Allow-Headers", "Content-Type");
+
+  return new Response(response.body, {
+    status: response.status,
+    headers,
+  });
+};
+
 /**
  * HTTP request handler for the server
  */
 const handleHttpRequest =
   (router: RoutesManager) =>
   async (req: Request): Promise<Response> => {
+    // Gérer les requêtes OPTIONS pour le CORS preflight
+    
     const url = new URL(req.url);
     const pathname = url.pathname.slice(1);
     const method = req.method.toLowerCase() as "get" | "post";
+    if (req.method.toLowerCase() === "options") {
+      return addCorsHeaders(new Response(null, { status: 204 }));
+    }
 
     const handler = router.get(method, pathname);
     if (!handler) {
-      return new Response("Route not found", { status: 404 });
+      return addCorsHeaders(new Response("Route not found", { status: 404 }));
     }
 
     try {
       const result = await handler(req);
-      // Si le handler retourne null, on continue
-      return result || new Response("Not found", { status: 404 });
+      if (!result) {
+        return addCorsHeaders(new Response("Not found", { status: 404 }));
+      }
+      return addCorsHeaders(result);
     } catch (error) {
       console.error(`Error handling route ${pathname}:`, error);
-      return new Response("Internal Server Error", { status: 500 });
+      return addCorsHeaders(
+        new Response("Internal Server Error", { status: 500 })
+      );
     }
   };
 
@@ -45,10 +69,12 @@ Bun.serve({
   websocket: {
     open(ws: ServerWebSocket<unknown>) {
       console.log("client connecté !");
-      ws.send(JSON.stringify({
-        type:"BROADCAST_ROOMS", 
-        ...broadcastRooms()
-      }))
+      ws.send(
+        JSON.stringify({
+          type: "BROADCAST_ROOMS",
+          ...broadcastRooms(),
+        })
+      );
     },
     async message(ws: ServerWebSocket<unknown>, message: string | Buffer) {
       console.log(`Message reçu: ${message}`);

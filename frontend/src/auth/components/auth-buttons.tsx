@@ -7,12 +7,13 @@ import {
 import { globalMachine } from "@/websocket/machine/global-machine";
 import { useActor } from "@xstate/react";
 
+
 // Components/AuthButtons.tsx
 const AuthButtons = () => {
   const [state, send] = useActor(globalMachine);
 
   const handleAuth = (service: Services) => {
-    send({ type: "AUTH.SERVICE", service });
+   send({ type: "AUTH.SERVICE", service });
   };
 
   return (
