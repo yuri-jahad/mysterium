@@ -17,6 +17,7 @@ const oAuthRedirectHandler =
       provider
     );
 
+    console.log({authUrl})
     return Response.redirect(authUrl);
   };
 

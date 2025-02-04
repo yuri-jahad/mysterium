@@ -7,6 +7,17 @@ import broadcastRooms from "./events/server/broadcast-rooms";
 
 // Fonction utilitaire pour ajouter les en-têtes CORS
 const addCorsHeaders = (response: Response): Response => {
+  // Si c'est une redirection, retourner la réponse telle quelle
+  if (
+    response.status === 301 ||
+    response.status === 302 ||
+    response.status === 303 ||
+    response.status === 307 ||
+    response.status === 308
+  ) {
+    return response;
+  }
+
   const headers = new Headers(response.headers);
   headers.set("Access-Control-Allow-Origin", import.meta.env.FRONTEND_URL || "");
   headers.set("Access-Control-Allow-Credentials", "true");
@@ -18,7 +29,6 @@ const addCorsHeaders = (response: Response): Response => {
     headers,
   });
 };
-
 /**
  * HTTP request handler for the server
  */
@@ -63,7 +73,6 @@ Bun.serve({
     if (success) {
       return new Response(null, { status: 101 });
     }
-
     return handleHttpRequest(router)(req);
   },
   websocket: {
