@@ -3,7 +3,6 @@ import Home from "@/pages/Home";
 import { globalMachine } from "@/websocket/machine/global-machine";
 import { useActor } from "@xstate/react";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
 const App = () => {
   const [state, send] = useActor(globalMachine);
