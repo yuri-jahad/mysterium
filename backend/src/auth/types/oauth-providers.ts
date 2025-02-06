@@ -1,26 +1,26 @@
 export type OAuthProviders = {
   discord: {
     id: string;
-    email: string;
+    avatar: string;
     username: string;
   };
   google: {
     id: string;
-    email: string;
+    picture: string;
     name: string;
   };
   twitch: {
     data: [
       {
         id: string;
-        email: string;
+        avatar: string;
         login: string;
       }
     ];
   };
   github: {
     id: number;
-    email: string;
+    avatar: string;
     login: string;
   };
 };

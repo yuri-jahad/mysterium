@@ -11,7 +11,7 @@ export const oauthConfig: OAuthConfig = {
     clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     getUserData: (data) => ({
       id: data.id,
-      email: data.email,
+      avatar: data.avatar,
       username: data.username,
     }),
   },
@@ -25,7 +25,7 @@ export const oauthConfig: OAuthConfig = {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     getUserData: (data) => ({
       id: data.id,
-      email: data.email,
+      avatar: data.picture,
       username: data.name,
     }),
   },
@@ -39,7 +39,7 @@ export const oauthConfig: OAuthConfig = {
     clientSecret: process.env.TWITCH_CLIENT_SECRET!,
     getUserData: (data) => ({
       id: data.data[0].id,
-      email: data.data[0].email,
+      avatar: data.data[0].avatar,
       username: data.data[0].login,
     }),
   },
@@ -51,10 +51,13 @@ export const oauthConfig: OAuthConfig = {
     scopes: ["read:user", "user:email"],
     clientId: process.env.GITHUB_CLIENT_ID!,
     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    getUserData: (data) => ({
-      id: data.id.toString(),
-      email: data.email,
-      username: data.login,
-    }),
+    getUserData: (data) => {
+      console.log(data);
+      return {
+        id: data.id.toString(),
+        avatar: data.avatar,
+        username: data.login,
+      };
+    },
   },
 };

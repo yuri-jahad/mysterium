@@ -27,9 +27,6 @@ const oAuthCallbackHandler =
       provider,
       code
     );
-
-    console.log({token}, "cc")
-
     try {
       return new Response(null, {
         status: 302,

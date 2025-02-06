@@ -5,7 +5,7 @@ import type {
 
 export interface NormalizedUser {
   id: string;
-  email: string;
+  avatar?:string;
   username: string;
 }
 

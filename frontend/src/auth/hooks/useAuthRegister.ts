@@ -16,6 +16,7 @@ export function getAuthUser(): UserAuth {
   const userStorage: UserAuth = getStorage("mysterium");
   if (userStorage) {
     if (userStorage.token) {
+      console.log(userStorage);
       return userStorage;
     }
     const token = generateToken();

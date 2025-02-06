@@ -43,7 +43,7 @@ export default class OauthCallbackService {
       },
     });
     const userData = await userResponse.json();
-
+    console.log(userData)
     const normalizedUserData = config.getUserData(userData);
     return normalizedUserData;
   }
