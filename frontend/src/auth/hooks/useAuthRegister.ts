@@ -7,30 +7,50 @@ import {
   updateStorageElements,
 } from "@/utils/local-storage";
 
-/*
-   Authentication registration utility
-   Checks if user exists in storage and manages token generation
-*/
+/**
+ * Utility for authentication registration.
+ * Checks if a user exists in storage and manages token generation.
+ */
 
 export function getAuthUser(): UserAuth {
-  const userStorage: UserAuth = getStorage("mysterium");
-  if (userStorage) {
-    if (userStorage.token) {
-      console.log(userStorage);
-      return userStorage;
-    }
-    const token = generateToken();
-    const updatedUser = { ...userStorage, token };
+  const userStorage = getStorage("mysterium") as UserAuth | null;
 
-    updateStorageElements("mysterium", { token });
-    return updatedUser;
+  if (userStorage) {
+    return handleExistingUser(userStorage);
   }
-  const newUserStorage: UserAuth = {
+
+  return createNewUser();
+}
+
+/**
+ * Handles the case where a user already exists in storage.
+ * @param userStorage - The existing user data from storage.
+ * @returns The updated user data with a new token if necessary.
+ */
+function handleExistingUser(userStorage: UserAuth): UserAuth {
+  if (userStorage.token) {
+    console.log({ getAuthUser: userStorage });
+    return userStorage;
+  }
+
+  const token = generateToken();
+  const updatedUser = { ...userStorage, token };
+
+  updateStorageElements("mysterium", { token });
+  return updatedUser;
+}
+
+/**
+ * Creates a new user with a random name and token.
+ * @returns The new user data.
+ */
+function createNewUser(): UserAuth {
+  const newUser: UserAuth = {
     username: generateRandomName(),
     token: generateToken(),
     avatar: null,
   };
 
-  setStorage("mysterium", newUserStorage);
-  return newUserStorage;
+  setStorage("mysterium", newUser);
+  return newUser;
 }
