@@ -3,11 +3,12 @@ import { getAuthUser } from "@/auth/hooks/useAuthRegister";
 import type { RoomInfos } from "@/websocket/types/client/room";
 import { UserAuth } from "@/auth/types/user";
 import { envConfig } from "@/env-config";
+import { saveToLocalStorage } from "@/utils/local-storage";
 
 export type Services = "discord" | "twitch" | "github" | "google" | null;
 
 interface AuthService extends UserAuth {
-  service: Services;
+  provider: Services;
 }
 
 type Context = {
@@ -52,7 +53,7 @@ const socketMachine = setup({
   initial: "connected",
   context: {
     auth: {
-      service: null,
+      provider: null,
       ...getAuthUser(),
     },
     rooms: [],
@@ -78,17 +79,32 @@ const socketMachine = setup({
         src: "authenticate",
         onDone: {
           target: "connected",
-          actions: assign({
-            auth: ({ event }) => ({
-              ...event.output,
-            }),
-          }),
+          actions: [
+            assign(({ context, event }) => ({
+              auth: {
+                ...context.auth,
+                ...event.output,
+              },
+            })),
+            ({ context, event }) => {
+              console.log({ event });
+              saveToLocalStorage("mysterium", {
+                ...context.auth,
+                ...event.output,
+                provider: event.output.provider || null,
+              });
+            },
+          ],
         },
         onError: {
           target: "connected",
           actions: [
-           
-            () => console.error("Auth failed"),
+            assign({
+              auth: () => ({
+                ...getAuthUser(),
+                provider: null,
+              }),
+            }),
           ],
         },
       },

@@ -2,18 +2,17 @@ import generateToken from "@/utils/generate-token";
 import generateRandomName from "@/utils/generate-random-name";
 import type { UserAuth } from "@/auth/types/user";
 import {
-  getStorage,
-  setStorage,
-  updateStorageElements,
+  getFromLocalStorage,
+  saveToLocalStorage,
+  updateLocalStorageValue, // Importé la fonction manquante avec son nouveau nom
 } from "@/utils/local-storage";
 
 /**
  * Utility for authentication registration.
  * Checks if a user exists in storage and manages token generation.
  */
-
 export function getAuthUser(): UserAuth {
-  const userStorage = getStorage("mysterium") as UserAuth | null;
+  const userStorage = getFromLocalStorage("mysterium") as UserAuth | null;
 
   if (userStorage) {
     return handleExistingUser(userStorage);
@@ -36,7 +35,7 @@ function handleExistingUser(userStorage: UserAuth): UserAuth {
   const token = generateToken();
   const updatedUser = { ...userStorage, token };
 
-  updateStorageElements("mysterium", { token });
+  updateLocalStorageValue("mysterium", { token }); // Utilisation du nouveau nom
   return updatedUser;
 }
 
@@ -51,6 +50,6 @@ function createNewUser(): UserAuth {
     avatar: null,
   };
 
-  setStorage("mysterium", newUser);
+  saveToLocalStorage("mysterium", newUser);
   return newUser;
 }

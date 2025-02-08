@@ -1,16 +1,16 @@
 /*
- Storage management utilities
- Simple localStorage wrapper with type safety and error handling
-*/
+ * LocalStorage management utilities
+ * Simple localStorage wrapper with type safety and error handling
+ */
 
-export const setStorage = <T>(storageName: string, value: T): void => {
-  if (!storageName) return;
-  localStorage.setItem(storageName, JSON.stringify(value));
+export const saveToLocalStorage = <T>(key: string, value: T): void => {
+  if (!key) return;
+  localStorage.setItem(key, JSON.stringify(value));
 };
 
-export const getStorage = (storageName: string) => {
-  if (!storageName) return;
-  const storage = localStorage.getItem(storageName);
+export const getFromLocalStorage = (key: string) => {
+  if (!key) return;
+  const storage = localStorage.getItem(key);
   if (!storage) return;
   try {
     return JSON.parse(storage);
@@ -19,16 +19,16 @@ export const getStorage = (storageName: string) => {
   }
 };
 
-export const updateStorageElements = <T extends Record<string, unknown>>(
-  storageName: string,
-  elements: Partial<T>
+export const updateLocalStorageValue = <T extends Record<string, unknown>>(
+  key: string,
+  updates: Partial<T>
 ): void => {
-  if (!storageName) return;
-  const storage = getStorage(storageName);
+  if (!key) return;
+  const storage = getFromLocalStorage(key);
   if (!storage) return;
   const newStorage = {
     ...storage,
-    ...elements,
+    ...updates,
   };
-  setStorage(storageName, newStorage);
+  saveToLocalStorage(key, newStorage);
 };
