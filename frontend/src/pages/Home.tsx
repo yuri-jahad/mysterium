@@ -1,97 +1,229 @@
-import React, { useEffect, useState } from "react";
-import type { CreateRoom } from "@/websocket/types/client/room";
-import AuthButtons from "@/auth/components/auth-buttons";
+import type { Services } from "@/websocket/machine/socket-machine";
+import {
+  GithubIcon,
+  GoogleIcon,
+  DiscordIcon,
+} from "@/auth/components/social-icons";
+import { globalMachine } from "@/websocket/machine/global-machine";
+import { useActor } from "@xstate/react";
+import { css } from "styled-system/css";
+import { flex } from "styled-system/patterns";
+import { ImageIcon, Camera, UserCircle } from "lucide-react";
 
-// Icons components
-
-type GameType = "Bombparty" | "Popsauce";
-type RoomVisibility = "public" | "private";
-
-interface CreateRoomForm {
-  gameName: GameType;
-  visibility: RoomVisibility;
-  roomName: string;
-}
 
 const Home = () => {
-  const [username, setUsername] = useState("");
-  const [formData, setFormData] = useState<CreateRoomForm>({
-    gameName: "Bombparty",
-    visibility: "public",
-    roomName: "",
-  });
+  const [state, send] = useActor(globalMachine);
+  const isAuthenticated = state.matches("connected");
 
-  useEffect(() => {
-    //send({ type: "CONNECTED" });
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!formData.roomName.trim() || !username.trim()) return;
-
-    const message: CreateRoom = {
-      type: "CREATE_ROOM",
-      roomName: formData.roomName.trim(),
-      gameName: formData.gameName,
-      isPrivate: formData.visibility === "private",
-      createdAt: Date.now(),
-      hostname: username,
-    };
-
-    setFormData((prev) => ({ ...prev, roomName: "" }));
+  const handleAuth = (service: Services) => {
+    send({ type: "AUTH.SERVICE", service });
   };
 
+  const containerStyles = css({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "8",
+    p: "8",
+    minH: "400px",
+    w: "full",
+    maxW: "md",
+    mx: "auto",
+    bg: "gray.900",
+    border: "1px solid",
+    borderColor: "gray.800",
+    rounded: "2xl",
+    shadow: "xl",
+    position: "relative",
+    overflow: "hidden",
+    _before: {
+      content: '""',
+      position: "absolute",
+      top: 0,
+      left: "-50%",
+      width: "200%",
+      height: "2px",
+      background:
+        "linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent)",
+    },
+  });
+
+  const buttonContainerStyles = css({
+    display: "flex",
+    gap: "4",
+    w: "full",
+    justifyContent: "center",
+    mt: "4",
+  });
+
+  const baseButtonStyles = css({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    p: "4",
+    rounded: "xl",
+    shadow: "md",
+    border: "1px solid",
+    borderColor: "gray.700",
+    transition: "all 0.2s ease",
+    w: "12",
+    h: "12",
+    _hover: {
+      transform: "translateY(-2px)",
+      shadow: "lg",
+      borderColor: "gray.600",
+    },
+    _active: {
+      transform: "translateY(0)",
+      shadow: "sm",
+    },
+  });
+
+  const profileContainerStyles = css({
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "6",
+    w: "full",
+    mt: "6",
+  });
+
+  const inputContainerStyles = css({
+    position: "relative",
+    w: "full",
+    maxW: "sm",
+  });
+
+  const inputStyles = css({
+    w: "full",
+    p: "4",
+    pl: "12",
+    bg: "gray.800",
+    border: "1px solid",
+    borderColor: "gray.700",
+    rounded: "xl",
+    color: "gray.100",
+    _placeholder: { color: "gray.500" },
+    _hover: { borderColor: "gray.600" },
+    _focus: {
+      borderColor: "indigo.500",
+      ring: "1",
+      ringColor: "indigo.500",
+    },
+  });
+
+  const userIconStyles = css({
+    position: "absolute",
+    left: "4",
+    top: "50%",
+    transform: "translateY(-50%)",
+    color: "gray.400",
+    w: "5",
+    h: "5",
+  });
+
+  const avatarContainerStyles = css({
+    position: "relative",
+    group: "",
+  });
+
+  const avatarOverlayStyles = css({
+    position: "absolute",
+    inset: "0",
+    rounded: "full",
+    bg: "blackAlpha.600",
+    opacity: "0",
+    transition: "opacity 0.2s",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    _groupHover: { opacity: "1" },
+  });
+
   return (
-    <main
-      className="max-w-md mx-auto p-6 rounded-lg border border-gray-500 w-2/5 h-4/5"
-      role="main"
-    >
-      {/* Connection state display */}
+    <div className={containerStyles}>
+      <h2
+        className={css({
+          fontSize: "2xl",
+          fontWeight: "bold",
+          color: "gray.100",
+          mb: "6",
+        })}
+      >
+        {isAuthenticated ? "Profile" : "Welcome back!"}
+      </h2>
 
-      {/* Social login buttons */}
-      <AuthButtons />
-      {/* Separator */}
-      <div className="relative my-6" role="separator" aria-label="ou">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-600"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-gray-800 text-gray-400">Ou</span>
-        </div>
-      </div>
+      {!isAuthenticated ? (
+        <>
+          <div className={buttonContainerStyles}>
+            <button
+              className={baseButtonStyles}
+              onClick={() => handleAuth("github")}
+            >
+              <GithubIcon />
+            </button>
+            <button
+              className={baseButtonStyles}
+              onClick={() => handleAuth("google")}
+            >
+              <GoogleIcon />
+            </button>
+            <button
+              className={baseButtonStyles}
+              onClick={() => handleAuth("discord")}
+            >
+              <DiscordIcon />
+            </button>
+          </div>
 
-      {/* User information section */}
-      <div className="space-y-4 mb-6">
-        <div>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Entrez votre pseudo"
-            aria-label="Pseudo"
-            className="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+          <div className={css({ color: "gray.400", my: "6" })}>or</div>
+
+          <div className={profileContainerStyles}>
+            <div className={avatarContainerStyles}>
+              <Avatar
+                className={css({
+                  w: "24",
+                  h: "24",
+                  border: "4px solid",
+                  borderColor: "gray.700",
+                })}
+              >
+                <AvatarFallback>
+                  <UserCircle
+                    className={css({ w: "12", h: "12", color: "gray.400" })}
+                  />
+                </AvatarFallback>
+              </Avatar>
+              <div className={avatarOverlayStyles}>
+                <Camera className={css({ w: "6", h: "6", color: "white" })} />
+                <input
+                  type="file"
+                  className={css({
+                    position: "absolute",
+                    inset: "0",
+                    opacity: "0",
+                    cursor: "pointer",
+                  })}
+                  accept="image/*"
+                />
+              </div>
+            </div>
+
+            <div className={inputContainerStyles}>
+              <UserCircle className={userIconStyles} />
+              <Input
+                placeholder="Enter your username"
+                className={inputStyles}
+              />
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className={profileContainerStyles}>
+          {/* Profile content here */}
         </div>
-        <div className="flex items-center space-x-2">
-          <input
-            type="file"
-            name="avatar"
-            id="avatar"
-            className="hidden"
-            accept="image/*"
-            aria-label="Sélectionner un avatar"
-          />
-          <label
-            htmlFor="avatar"
-            className="flex items-center justify-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg cursor-pointer transition-all duration-300"
-            role="button"
-          >
-            Choisir un avatar
-          </label>
-        </div>
-      </div>
-    </main>
+      )}
+    </div>
   );
 };
 

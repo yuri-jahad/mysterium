@@ -4,7 +4,7 @@ const Nav = () => {
       <header>
         <nav>
           <div className="client-username"></div>
-          <input type="text" />
+          <input title="test" type="text" />
           <input
             title="select-avatar"
             className="avatar"
