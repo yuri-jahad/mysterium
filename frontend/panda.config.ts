@@ -8,5 +8,11 @@ export default defineConfig({
   watch: true,
   outExtension: "js",
   jsxFramework: "react",
-  presets: ["@pandacss/preset-panda"],
+  presets: ["@pandacss/preset-panda", "@park-ui/panda-preset"],
+  theme: {
+    extend: {
+      recipes,
+      slotRecipes,
+    }, // Vous pouvez étendre les thèmes ici
+  },
 });

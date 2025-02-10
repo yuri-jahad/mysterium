@@ -7,13 +7,12 @@ import {
 import { globalMachine } from "@/websocket/machine/global-machine";
 import { useActor } from "@xstate/react";
 import { css } from "styled-system/css";
-import { flex } from "styled-system/patterns";
-import { ImageIcon, Camera, UserCircle } from "lucide-react";
+import { Avatar } from "@park-ui/panda-preset";
 
 
 const Home = () => {
   const [state, send] = useActor(globalMachine);
-  const isAuthenticated = state.matches("connected");
+  const isAuthenticated = state.matches("authenticating");
 
   const handleAuth = (service: Services) => {
     send({ type: "AUTH.SERVICE", service });
@@ -88,30 +87,6 @@ const Home = () => {
     mt: "6",
   });
 
-  const inputContainerStyles = css({
-    position: "relative",
-    w: "full",
-    maxW: "sm",
-  });
-
-  const inputStyles = css({
-    w: "full",
-    p: "4",
-    pl: "12",
-    bg: "gray.800",
-    border: "1px solid",
-    borderColor: "gray.700",
-    rounded: "xl",
-    color: "gray.100",
-    _placeholder: { color: "gray.500" },
-    _hover: { borderColor: "gray.600" },
-    _focus: {
-      borderColor: "indigo.500",
-      ring: "1",
-      ringColor: "indigo.500",
-    },
-  });
-
   const userIconStyles = css({
     position: "absolute",
     left: "4",
@@ -120,24 +95,6 @@ const Home = () => {
     color: "gray.400",
     w: "5",
     h: "5",
-  });
-
-  const avatarContainerStyles = css({
-    position: "relative",
-    group: "",
-  });
-
-  const avatarOverlayStyles = css({
-    position: "absolute",
-    inset: "0",
-    rounded: "full",
-    bg: "blackAlpha.600",
-    opacity: "0",
-    transition: "opacity 0.2s",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    _groupHover: { opacity: "1" },
   });
 
   return (
@@ -157,18 +114,21 @@ const Home = () => {
         <>
           <div className={buttonContainerStyles}>
             <button
+              aria-label="btn github"
               className={baseButtonStyles}
               onClick={() => handleAuth("github")}
             >
               <GithubIcon />
             </button>
             <button
+              aria-label="btn google"
               className={baseButtonStyles}
               onClick={() => handleAuth("google")}
             >
               <GoogleIcon />
             </button>
             <button
+              aria-label="btn discord"
               className={baseButtonStyles}
               onClick={() => handleAuth("discord")}
             >
@@ -179,43 +139,7 @@ const Home = () => {
           <div className={css({ color: "gray.400", my: "6" })}>or</div>
 
           <div className={profileContainerStyles}>
-            <div className={avatarContainerStyles}>
-              <Avatar
-                className={css({
-                  w: "24",
-                  h: "24",
-                  border: "4px solid",
-                  borderColor: "gray.700",
-                })}
-              >
-                <AvatarFallback>
-                  <UserCircle
-                    className={css({ w: "12", h: "12", color: "gray.400" })}
-                  />
-                </AvatarFallback>
-              </Avatar>
-              <div className={avatarOverlayStyles}>
-                <Camera className={css({ w: "6", h: "6", color: "white" })} />
-                <input
-                  type="file"
-                  className={css({
-                    position: "absolute",
-                    inset: "0",
-                    opacity: "0",
-                    cursor: "pointer",
-                  })}
-                  accept="image/*"
-                />
-              </div>
-            </div>
-
-            <div className={inputContainerStyles}>
-              <UserCircle className={userIconStyles} />
-              <Input
-                placeholder="Enter your username"
-                className={inputStyles}
-              />
-            </div>
+            <Avatar src="/image.jpg" fallback="JD" name="John Doe" />
           </div>
         </>
       ) : (

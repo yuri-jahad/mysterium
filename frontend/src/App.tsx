@@ -18,7 +18,7 @@ const App = () => {
   }, [location.pathname]);
 
   return (
-    <div className={css({height:"100vh"})}>
+    <div className={css({height:"100vh", bg:"black", color:"white"})}>
       {state.context.auth && (
         <div>
           <pre>{JSON.stringify(state.context.auth, null, 2)}</pre>
