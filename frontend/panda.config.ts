@@ -1,4 +1,7 @@
 import { defineConfig } from "@pandacss/dev";
+import { createPreset } from "@park-ui/panda-preset";
+import amber from "@park-ui/panda-preset/colors/amber";
+import sand from "@park-ui/panda-preset/colors/sand";
 
 export default defineConfig({
   preflight: true,
@@ -8,11 +11,12 @@ export default defineConfig({
   watch: true,
   outExtension: "js",
   jsxFramework: "react",
-  presets: ["@pandacss/preset-panda", "@park-ui/panda-preset"],
-  theme: {
-    extend: {
-      recipes,
-      slotRecipes,
-    }, // Vous pouvez étendre les thèmes ici
-  },
+  presets: [
+    "@pandacss/preset-panda",
+    createPreset({
+      accentColor: amber,
+      grayColor: sand,
+      radius: "sm",
+    })
+  ]
 });

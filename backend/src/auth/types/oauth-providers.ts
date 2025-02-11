@@ -20,7 +20,7 @@ export type OAuthProviders = {
   };
   github: {
     id: number;
-    avatar: string;
+    avatar_url: string;
     login: string;
   };
 };

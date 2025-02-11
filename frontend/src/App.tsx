@@ -6,7 +6,6 @@ import { useEffect } from "react";
 
 const App = () => {
   const [state, send] = useActor(globalMachine);
-
   useEffect(() => {
     console.log(location.pathname);
 

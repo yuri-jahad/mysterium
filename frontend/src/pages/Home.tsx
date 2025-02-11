@@ -7,8 +7,8 @@ import {
 import { globalMachine } from "@/websocket/machine/global-machine";
 import { useActor } from "@xstate/react";
 import { css } from "styled-system/css";
-import { Avatar } from "@park-ui/panda-preset";
-
+import { Avatar } from "@/components/ui/avatar";
+import { useEffect } from "react";
 
 const Home = () => {
   const [state, send] = useActor(globalMachine);
@@ -16,7 +16,7 @@ const Home = () => {
 
   const handleAuth = (service: Services) => {
     send({ type: "AUTH.SERVICE", service });
-  };
+  }; 
 
   const containerStyles = css({
     display: "flex",
@@ -139,7 +139,8 @@ const Home = () => {
           <div className={css({ color: "gray.400", my: "6" })}>or</div>
 
           <div className={profileContainerStyles}>
-            <Avatar src="/image.jpg" fallback="JD" name="John Doe" />
+            <div>{state.context.auth.username}</div>
+            <Avatar src={state.context.auth.avatar || ""}  />
           </div>
         </>
       ) : (
@@ -152,3 +153,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

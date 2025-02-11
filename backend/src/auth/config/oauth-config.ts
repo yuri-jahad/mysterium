@@ -11,7 +11,7 @@ export const oauthConfig: OAuthConfig = {
     clientSecret: process.env.DISCORD_CLIENT_SECRET!,
     getUserData: (data) => ({
       id: data.id,
-      avatar: data.avatar,
+      avatar: `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`,
       username: data.username,
     }),
   },
@@ -55,7 +55,7 @@ export const oauthConfig: OAuthConfig = {
       console.log(data);
       return {
         id: data.id.toString(),
-        avatar: data.avatar,
+        avatar:  data.avatar_url,
         username: data.login,
       };
     },
