@@ -1,4 +1,7 @@
-import useWebSocket from "@/hook/useWebSocket";
+
+
+import { Demo } from "@/components/ui/dialog";
+import { DialogFull } from "@/shared/dialog";
 import React, { useState } from "react";
 
 type GameType = "Bombparty" | "Popsauce";
@@ -19,7 +22,6 @@ interface CreateRoomMessage {
 }
 
 const Home = () => {
-  const { sendMessage } = useWebSocket();
   const [formData, setFormData] = useState<CreateRoomForm>({
     gameName: "Bombparty",
     visibility: "public",
@@ -39,7 +41,8 @@ const Home = () => {
       hostname: "Mohamed",
     };
 
-    sendMessage(message);
+    console.log({DialogFull})
+    //sendMessage(message);
 
     // Reset form
     setFormData((prev) => ({
@@ -50,6 +53,7 @@ const Home = () => {
 
   return (
     <div className="max-w-md mx-auto p-6">
+      <DialogFull/>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-4">
           <div>
