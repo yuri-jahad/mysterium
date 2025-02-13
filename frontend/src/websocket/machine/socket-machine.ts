@@ -87,7 +87,6 @@ const socketMachine = setup({
               },
             })),
             ({ context, event }) => {
-              console.log({ event });
               saveToLocalStorage("mysterium", {
                 ...context.auth,
                 ...event.output,
